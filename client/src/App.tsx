@@ -10,16 +10,15 @@ import TryOnInteractive from "./components/TryOnInteractive";
 const PILOT_CONFIG = {
   id: "lafayette",
   displayName: "Lafayette",
-  routePath: "/lafayette",
-  pageTitle: "TryOnYou | Piloto Lafayette",
   defaultTheme: "light" as const,
 };
+const PILOT_ROUTE_PATH = `/${PILOT_CONFIG.id}`;
 
 function Router() {
   return (
     <Switch>
       <Route path={"/"} component={TryOnInteractive} />
-      <Route path={PILOT_CONFIG.routePath} component={TryOnInteractive} />
+      <Route path={PILOT_ROUTE_PATH} component={TryOnInteractive} />
       <Route path={"/404"} component={NotFound} />
       {/* Final fallback route */}
       <Route component={NotFound} />
@@ -34,7 +33,7 @@ function Router() {
 
 function App() {
   useEffect(() => {
-    document.title = PILOT_CONFIG.pageTitle;
+    document.title = `TryOnYou | Piloto ${PILOT_CONFIG.displayName}`;
   }, []);
 
   return (
