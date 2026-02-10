@@ -284,7 +284,7 @@ export default function TryOnInteractive() {
 
             <img
               src="/assets/images/my-avatar-bg.png"
-              alt="Overlay"
+              alt=""
               className="absolute inset-0 z-10 h-full w-full object-cover pointer-events-none opacity-60"
             />
 
