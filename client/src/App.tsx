@@ -1,3 +1,4 @@
+import { useEffect } from "react";
 import { Toaster } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import NotFound from "@/pages/NotFound";
@@ -6,11 +7,19 @@ import ErrorBoundary from "./components/ErrorBoundary";
 import { ThemeProvider } from "./contexts/ThemeContext";
 import TryOnInteractive from "./components/TryOnInteractive";
 
+const PILOT_CONFIG = {
+  id: "lafayette",
+  displayName: "Lafayette",
+  routePath: "/lafayette",
+  pageTitle: "TryOnYou | Piloto Lafayette",
+  defaultTheme: "light" as const,
+};
 
 function Router() {
   return (
     <Switch>
       <Route path={"/"} component={TryOnInteractive} />
+      <Route path={PILOT_CONFIG.routePath} component={TryOnInteractive} />
       <Route path={"/404"} component={NotFound} />
       {/* Final fallback route */}
       <Route component={NotFound} />
@@ -24,10 +33,14 @@ function Router() {
 // - If you want to make theme switchable, pass `switchable` ThemeProvider and use `useTheme` hook
 
 function App() {
+  useEffect(() => {
+    document.title = PILOT_CONFIG.pageTitle;
+  }, []);
+
   return (
     <ErrorBoundary>
       <ThemeProvider
-        defaultTheme="light"
+        defaultTheme={PILOT_CONFIG.defaultTheme}
         // switchable
       >
         <TooltipProvider>
