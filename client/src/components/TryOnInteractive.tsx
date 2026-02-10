@@ -1,8 +1,30 @@
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
+import Webcam from 'react-webcam';
+
+type AngleKey = 'front' | 'deg30' | 'deg45';
+type Gender = 'male' | 'female';
+type GarmentCategory = 'tops' | 'bottoms' | 'outerwear' | 'dresses';
+type GarmentGender = 'unisex' | Gender;
+
+interface Model {
+  id: string;
+  name: string;
+  gender: Gender;
+  angles: Record<AngleKey, string>;
+}
+
+interface Garment {
+  id: string;
+  name: string;
+  category: GarmentCategory;
+  image: string;
+  thumbnail: string;
+  gender: GarmentGender;
+}
 
 // Datos de modelos
-const MODELS = [
+const MODELS: Model[] = [
   {
     id: 'male-1',
     name: 'Modelo Masculino',
@@ -26,7 +48,7 @@ const MODELS = [
 ];
 
 // Datos de prendas
-const GARMENTS = [
+const GARMENTS: Garment[] = [
   // Tops
   {
     id: 'top-white-tshirt',
@@ -129,7 +151,7 @@ const GARMENTS = [
   },
 ];
 
-const CATEGORIES = [
+const CATEGORIES: Array<{ id: GarmentCategory; name: string }> = [
   { id: 'tops', name: 'Tops' },
   { id: 'bottoms', name: 'Bottoms' },
   { id: 'outerwear', name: 'Outerwear' },
@@ -137,10 +159,10 @@ const CATEGORIES = [
 ];
 
 export default function TryOnInteractive() {
-  const [selectedModel, setSelectedModel] = useState(MODELS[1]); // Femenino por defecto
-  const [currentAngle, setCurrentAngle] = useState('front');
-  const [selectedCategory, setSelectedCategory] = useState('tops');
-  const [selectedGarment, setSelectedGarment] = useState(null);
+  const [selectedModel, setSelectedModel] = useState<Model>(MODELS[1]); // Femenino por defecto
+  const [currentAngle, setCurrentAngle] = useState<AngleKey>('front');
+  const [selectedCategory, setSelectedCategory] = useState<GarmentCategory>('tops');
+  const [selectedGarment, setSelectedGarment] = useState<Garment | null>(null);
   const [isRotating, setIsRotating] = useState(false);
 
   // Filtrar prendas según modelo y categoría
@@ -156,7 +178,7 @@ export default function TryOnInteractive() {
       setIsRotating(true);
       
       // Secuencia de rotación: front -> 30° -> 45° -> 30° -> front
-      const angles = ['deg30', 'deg45', 'deg30', 'front'];
+      const angles: AngleKey[] = ['deg30', 'deg45', 'deg30', 'front'];
       let step = 0;
 
       const rotationInterval = setInterval(() => {
@@ -173,7 +195,7 @@ export default function TryOnInteractive() {
     }
   }, [selectedGarment?.id, isRotating]);
 
-  const handleGarmentSelect = (garment) => {
+  const handleGarmentSelect = (garment: Garment) => {
     setSelectedGarment(garment);
   };
 
@@ -250,15 +272,29 @@ export default function TryOnInteractive() {
         </div>
 
         {/* Centro - Modelo con Prenda */}
-        <div className="flex-1 flex items-center justify-center relative">
-          <div className="relative w-[500px] h-[700px]">
+        <div className="flex-1 flex items-center justify-center relative px-6 py-8">
+          <div className="relative w-full max-w-[500px] h-[700px] overflow-hidden rounded-3xl border border-white/40 shadow-2xl">
+            <Webcam
+              audio={false}
+              mirrored
+              screenshotFormat="image/jpeg"
+              videoConstraints={{ facingMode: 'user' }}
+              className="absolute inset-0 z-0 h-full w-full object-cover"
+            />
+
+            <img
+              src="/assets/images/my-avatar-bg.png"
+              alt="Overlay"
+              className="absolute inset-0 z-10 h-full w-full object-cover pointer-events-none opacity-60"
+            />
+
             {/* Modelo Base */}
             <AnimatePresence mode="wait">
               <motion.img
                 key={`model-${selectedModel.id}-${currentAngle}`}
                 src={selectedModel.angles[currentAngle]}
                 alt={selectedModel.name}
-                className="absolute inset-0 w-full h-full object-contain"
+                className="absolute inset-0 z-20 w-full h-full object-contain"
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 exit={{ opacity: 0 }}
@@ -273,7 +309,7 @@ export default function TryOnInteractive() {
                   key={`garment-${selectedGarment.id}-${currentAngle}`}
                   src={selectedGarment.image}
                   alt={selectedGarment.name}
-                  className="absolute inset-0 w-full h-full object-contain mix-blend-multiply"
+                  className="absolute inset-0 z-30 w-full h-full object-contain mix-blend-multiply"
                   initial={{ opacity: 0, scale: 0.9 }}
                   animate={{ opacity: 1, scale: 1 }}
                   exit={{ opacity: 0, scale: 0.9 }}
